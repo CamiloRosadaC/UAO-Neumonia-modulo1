@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uao-neumonia"
+version = "0.1.0"
+description = "Herramienta para detección rápida de neumonía con GUI/CLI y Grad-CAM"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "numpy",
+  "pillow",
+  "opencv-python",
+  "pydicom",
+  "tkcap",
+  "img2pdf",
+  "pyautogui",
+  "tensorflow",
+  'python-xlib; sys_platform == "linux"',
+]
+
+# Comandos de terminal creados al instalar el paquete
+[project.scripts]
+uao-neumonia-gui = "app.gui:main"
+uao-neumonia-cli = "app.cli:main"
+
+# Descubrir paquetes (incluye app/ y src/)
+[tool.setuptools.packages.find]
+include = ["app", "src"]
+

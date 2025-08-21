@@ -13,46 +13,72 @@ import tkcap
 import img2pdf
 import numpy as np
 import time
-tf.compat.v1.disable_eager_execution()
-tf.compat.v1.experimental.output_all_intermediates(True)
+
+import tensorflow as tf 
+from tensorflow.keras.models import load_model 
+import pydicom as dicom                        
+
 import cv2
 
+def model_fun():
+    return load_model("model/conv_MLP_84.h5", compile=False)
 
 def grad_cam(array):
+    
     img = preprocess(array)
     model = model_fun()
-    preds = model.predict(img)
-    argmax = np.argmax(preds[0])
-    output = model.output[:, argmax]
-    last_conv_layer = model.get_layer("conv10_thisone")
-    grads = K.gradients(output, last_conv_layer.output)[0]
-    pooled_grads = K.mean(grads, axis=(0, 1, 2))
-    iterate = K.function([model.input], [pooled_grads, last_conv_layer.output[0]])
-    pooled_grads_value, conv_layer_output_value = iterate(img)
-    for filters in range(64):
-        conv_layer_output_value[:, :, filters] *= pooled_grads_value[filters]
-    # creating the heatmap
-    heatmap = np.mean(conv_layer_output_value, axis=-1)
-    heatmap = np.maximum(heatmap, 0)  # ReLU
-    heatmap /= np.max(heatmap)  # normalize
-    heatmap = cv2.resize(heatmap, (img.shape[1], img.shape[2]))
-    heatmap = np.uint8(255 * heatmap)
-    heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
-    img2 = cv2.resize(array, (512, 512))
-    hif = 0.8
-    transparency = heatmap * hif
-    transparency = transparency.astype(np.uint8)
-    superimposed_img = cv2.add(transparency, img2)
-    superimposed_img = superimposed_img.astype(np.uint8)
-    return superimposed_img[:, :, ::-1]
 
+    preds = model.predict(img)
+    class_idx = int(np.argmax(preds[0]))
+
+    last_conv_layer = None
+    for layer in reversed(model.layers):
+        if isinstance(layer, (tf.keras.layers.Conv2D,
+                              tf.keras.layers.SeparableConv2D,
+                              tf.keras.layers.DepthwiseConv2D)):
+            last_conv_layer = layer
+            break
+    if last_conv_layer is None:
+        raise ValueError("No se encontró una capa convolucional en el modelo.")
+
+    grad_model = tf.keras.models.Model(
+        inputs=model.input,
+        outputs=[last_conv_layer.output, model.output]
+    )
+
+    with tf.GradientTape() as tape:
+        
+        conv_outputs, predictions = grad_model(img, training=False)
+        
+        if isinstance(predictions, (list, tuple)):
+            predictions = predictions[0]
+        loss = predictions[:, class_idx]
+
+    grads = tape.gradient(loss, conv_outputs)                
+    pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))     
+
+    conv_outputs = conv_outputs[0]                           
+    heatmap = tf.reduce_sum(pooled_grads * conv_outputs, axis=-1)
+    heatmap = tf.maximum(heatmap, 0)
+    heatmap = heatmap / (tf.reduce_max(heatmap) + 1e-8)
+    heatmap = heatmap.numpy()
+
+    heat_u8 = np.uint8(255 * cv2.resize(heatmap, (512, 512)))
+    heat_color = cv2.applyColorMap(heat_u8, cv2.COLORMAP_JET)
+
+    base = cv2.resize(array, (512, 512))
+    
+    base_bgr = cv2.cvtColor(base, cv2.COLOR_RGB2BGR)
+    overlay_bgr = cv2.addWeighted(base_bgr, 0.6, heat_color, 0.4, 0)
+    overlay_rgb = cv2.cvtColor(overlay_bgr, cv2.COLOR_BGR2RGB)
+    return overlay_rgb
 
 def predict(array):
-    #   1. call function to pre-process image: it returns image in batch format
+    
     batch_array_img = preprocess(array)
-    #   2. call function to load model and predict: it returns predicted class and probability
+    
     model = model_fun()
-    # model_cnn = tf.keras.models.load_model('conv_MLP_84.h5')
+    
     prediction = np.argmax(model.predict(batch_array_img))
     proba = np.max(model.predict(batch_array_img)) * 100
     label = ""
@@ -62,20 +88,20 @@ def predict(array):
         label = "normal"
     if prediction == 2:
         label = "viral"
-    #   3. call function to generate Grad-CAM: it returns an image with a superimposed heatmap
+    
     heatmap = grad_cam(array)
     return (label, proba, heatmap)
 
-
 def read_dicom_file(path):
-    img = dicom.read_file(path)
-    img_array = img.pixel_array
+    ds = dicom.dcmread(path)
+    img_array = ds.pixel_array
     img2show = Image.fromarray(img_array)
     img2 = img_array.astype(float)
     img2 = (np.maximum(img2, 0) / img2.max()) * 255.0
     img2 = np.uint8(img2)
     img_RGB = cv2.cvtColor(img2, cv2.COLOR_GRAY2RGB)
     return img_RGB, img2show
+
 
 
 def read_jpg_file(path):
@@ -87,16 +113,21 @@ def read_jpg_file(path):
     img2 = np.uint8(img2)
     return img2, img2show
 
-
 def preprocess(array):
-    array = cv2.resize(array, (512, 512))
-    array = cv2.cvtColor(array, cv2.COLOR_BGR2GRAY)
+    
+    if array.ndim == 3 and array.shape[2] == 3:
+        
+        gray = cv2.cvtColor(array, cv2.COLOR_RGB2GRAY)  
+    else:
+        gray = array
+
+    gray = cv2.resize(gray, (512, 512))
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(4, 4))
-    array = clahe.apply(array)
-    array = array / 255
-    array = np.expand_dims(array, axis=-1)
-    array = np.expand_dims(array, axis=0)
-    return array
+    gray = clahe.apply(gray)
+    gray = gray / 255.0
+    gray = np.expand_dims(gray, axis=-1)
+    gray = np.expand_dims(gray, axis=0)
+    return gray
 
 
 class App:
@@ -152,22 +183,30 @@ class App:
         )
 
         #   WIDGETS POSITIONS
+        # Cambio 13 visualizacion correcta de los textos
         self.lab1.place(x=110, y=65)
         self.lab2.place(x=545, y=65)
-        self.lab3.place(x=500, y=350)
-        self.lab4.place(x=65, y=350)
+        
         self.lab5.place(x=122, y=25)
-        self.lab6.place(x=500, y=400)
+        
         self.button1.place(x=220, y=460)
         self.button2.place(x=70, y=460)
         self.button3.place(x=670, y=460)
         self.button4.place(x=520, y=460)
         self.button6.place(x=370, y=460)
-        self.text1.place(x=200, y=350)
-        self.text2.place(x=610, y=350, width=90, height=30)
-        self.text3.place(x=610, y=400, width=90, height=30)
-        self.text_img1.place(x=65, y=90)
-        self.text_img2.place(x=500, y=90)
+        
+        self.text_img1.place(x=65,  y=90,  width=250, height=250)
+        self.text_img2.place(x=500, y=90,  width=250, height=250)
+
+        self.lab4.place(x=65,  y=360)                            
+        self.text1.place(x=230, y=356, width=140, height=24)     
+
+        self.lab3.place(x=500, y=350)                            
+        self.text2.place(x=640, y=346, width=140, height=24)     
+
+        self.lab6.place(x=500, y=400)                            
+        self.text3.place(x=640, y=396, width=140, height=24)     
+      
 
         #   FOCUS ON PATIENT ID
         self.text1.focus_set()
@@ -182,6 +221,7 @@ class App:
         self.root.mainloop()
 
     #   METHODS
+
     def load_img_file(self):
         filepath = filedialog.askopenfilename(
             initialdir="/",
@@ -191,24 +231,41 @@ class App:
                 ("JPEG", "*.jpeg"),
                 ("jpg files", "*.jpg"),
                 ("png files", "*.png"),
-            ),
+        ),
         )
         if filepath:
-            self.array, img2show = read_dicom_file(filepath)
-            self.img1 = img2show.resize((250, 250), Image.ANTIALIAS)
-            self.img1 = ImageTk.PhotoImage(self.img1)
+            ext = filepath.lower().split(".")[-1]
+            if ext == "dcm":
+                self.array, img2show = read_dicom_file(filepath)
+            else:
+                self.array, img2show = read_jpg_file(filepath)
+
+            try:
+                
+                img2show = img2show.resize((250, 250), Image.Resampling.LANCZOS)
+            except AttributeError:
+                img2show = img2show.resize((250, 250), Image.ANTIALIAS)  
+            self.img1 = ImageTk.PhotoImage(img2show)
+
+            self.text_img1.delete("1.0", "end")  
             self.text_img1.image_create(END, image=self.img1)
             self.button1["state"] = "enabled"
 
     def run_model(self):
+        self.text_img2.delete("1.0", "end")
+        self.text2.delete("1.0", "end")
+        self.text3.delete("1.0", "end")
         self.label, self.proba, self.heatmap = predict(self.array)
         self.img2 = Image.fromarray(self.heatmap)
-        self.img2 = self.img2.resize((250, 250), Image.ANTIALIAS)
+        try:
+            self.img2 = self.img2.resize((250, 250), Image.Resampling.LANCZOS)
+        except AttributeError:
+            self.img2 = self.img2.resize((250, 250), Image.ANTIALIAS)
         self.img2 = ImageTk.PhotoImage(self.img2)
-        print("OK")
         self.text_img2.image_create(END, image=self.img2)
         self.text2.insert(END, self.label)
         self.text3.insert(END, "{:.2f}".format(self.proba) + "%")
+
 
     def save_results_csv(self):
         with open("historial.csv", "a") as csvfile:
@@ -237,8 +294,8 @@ class App:
             self.text1.delete(0, "end")
             self.text2.delete(1.0, "end")
             self.text3.delete(1.0, "end")
-            self.text_img1.delete(self.img1, "end")
-            self.text_img2.delete(self.img2, "end")
+            self.text_img1.delete("1.0", "end")
+            self.text_img2.delete("1.0", "end")
             showinfo(title="Borrar", message="Los datos se borraron con éxito")
 
 

@@ -1,0 +1,33 @@
+# Repositorio / VCS
+.git
+.gitignore
+
+# Entornos y cachés
+.venv
+__pycache__/
+*.pyc
+.pytest_cache/
+uv.lock
+
+# Datos pesados / locales (se montan en runtime)
+model/
+outputs/
+samples/
+*.h5
+*.dcm
+*.csv
+*.pdf
+*.jpg
+*.jpeg
+*.png
+
+# Tests y docs (no necesarios para la imagen de ejecución)
+tests/
+README*
+docs/
+
+# SO / editor
+.DS_Store
+.vscode/
+.idea/
+
