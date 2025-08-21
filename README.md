@@ -94,45 +94,14 @@ uv pip install -r requirements-dev.txt (opcional: herramientas de desarrollo)
 
 ## Estructura de resultados
 Al ejecutar la app se crean automáticamente estas carpetas: 
-
-resultados/
-├── reportes/     # PDFs generados (Reporte0.pdf, Reporte1.pdf, …)
-└── historial/    # historial.csv con las predicciones guardadas
+<img width="502" height="83" alt="image" src="https://github.com/user-attachments/assets/76cc0b03-044d-4d35-9116-4081cdee00a0" />
 
 - Los reportes se guardan como resultados/reportes/ReporteN.pdf, donde N es el primer índice libre (no se sobreescriben aunque cierres/abras la app).
 
 - La imagen temporal utilizada para generar el PDF se elimina automáticamente.
 
 ## Estructura del proyecto (desacoplado)
-
-  UAO-Neumonia/
-├─ app/
-│  ├─ __init__.py
-│  ├─ gui.py        # Interfaz Tkinter (orquestación)
-│  └─ cli.py        # Modo línea de comandos (inferencia + guardado de heatmap)
-├─ src/
-│  ├─ __init__.py
-│  ├─ io_imgs.py      # Lectura DICOM/JPG/PNG → RGB + PIL para GUI
-│  ├─ preprocess.py   # 512x512, gris, CLAHE, normalización, batch
-│  ├─ model.py        # Carga del modelo (.h5) → model_fun()
-│  ├─ explain.py      # Grad-CAM (tf.GradientTape) → heatmap superpuesto
-│  └─ inference.py    # predict() → (label, proba, heatmap)
-├─ model/             # (vacío en git; montar .h5 en runtime)
-├─ resultados/
-│  ├─ reportes/       # PDFs generados por GUI
-│  └─ historial/      # historial.csv
-├─ outputs/           # (opcional; resultados de CLI si usas --out)
-├─ samples/           # (imágenes locales de prueba; no versionadas)
-├─ tests/             # Pruebas unitarias (pytest)
-├─ pyproject.toml
-├─ requirements.txt
-├─ requirements-dev.txt
-├─ pytest.ini
-├─ Dockerfile
-├─ .dockerignore
-├─ .gitignore
-├─ CHANGELOG.md
-└─ README.md
+<img width="609" height="642" alt="image" src="https://github.com/user-attachments/assets/07ba9e8e-924a-40ba-874c-b5688f88bea6" />
 
 ## Pruebas (pytest)
   Ejecuta desde la raíz:
