@@ -68,39 +68,71 @@ uv pip install -r requirements-dev.txt (opcional: herramientas de desarrollo)
 
 ## Uso de la interfaz
   
-  1. Ingrese la cédula del paciente.
-  2. Clic en Cargar Imagen y seleccione un archivo (.dcm, .jpg/.jpeg o .png).
+  1. Cargar imagen y seleccionar archivo (.dcm, .jpg/.jpeg o .png).
+  2. Ingrese la cédula del paciente.
   3. Clic en Predecir → verá el Resultado, la Probabilidad y el Heatmap (Grad-CAM).
-  4. Guardar → añade una fila a historial.csv (cédula, etiqueta, probabilidad).
-  5. PDF → exporta una captura de la ventana como ReporteN.pdf.
-  6. Borrar → limpia todos los campos y deshabilita Predecir hasta cargar una nueva imagen.
+  4. Con cédula + predicción disponibles, se habilitan:
+    - Guardar → agrega una fila a resultados/historial/historial.csv (cédula, etiqueta, probabilidad).
+    - PDF → exporta una captura como resultados/reportes/ReporteN.pdf.
+
+  5. Borrar → limpia todos los campos y deshabilita Predecir hasta cargar una nueva imagen.
+
+    ### notas: 
+    - Los campos Resultado y Probabilidad son solo lectura.
+
+    - La app evita acciones inválidas con mensajes claros:
+
+      * “Falta la cédula.”
+
+      * “No se ha cargado una imagen.”
+
+      * “No se ha realizado una predicción.”
+
+    - Al cargar una nueva imagen se limpian resultado/heatmap previos.
+
+    - Tras Borrar, Predecir queda deshabilitado hasta cargar otra imagen.
+
+## Estructura de resultados
+Al ejecutar la app se crean automáticamente estas carpetas: 
+
+resultados/
+├── reportes/     # PDFs generados (Reporte0.pdf, Reporte1.pdf, …)
+└── historial/    # historial.csv con las predicciones guardadas
+
+- Los reportes se guardan como resultados/reportes/ReporteN.pdf, donde N es el primer índice libre (no se sobreescriben aunque cierres/abras la app).
+
+- La imagen temporal utilizada para generar el PDF se elimina automáticamente.
 
 ## Estructura del proyecto (desacoplado)
 
   UAO-Neumonia/
-  ├─ app/
-  │  ├─ __init__.py
-  │  ├─ gui.py      # Interfaz Tkinter (orquestación)
-  │  └─ cli.py      # Modo línea de comandos (inferencia + guardado de heatmap)
-  ├─ src/
-  │  ├─ __init__.py
-  │  ├─ io_imgs.py      # Lectura DICOM/JPG/PNG → RGB + PIL para GUI
-  │  ├─ preprocess.py   # 512x512, gris, CLAHE, normalización, batch
-  │  ├─ model.py        # Carga del modelo (.h5) → model_fun()
-  │  ├─ explain.py      # Grad-CAM (tf.GradientTape) → heatmap superpuesto
-  │  └─ inference.py    # predict() → (label, proba, heatmap)
-  ├─ model/             # (vacío en git; montar .h5 en runtime)
-  ├─ outputs/           # (resultados de CLI/GUI)
-  ├─ samples/           # (imágenes locales de prueba; no versionadas)
-  ├─ tests/             # Pruebas unitarias (pytest)
-  ├─ pyproject.toml
-  ├─ requirements.txt         # respaldo (no canónico)
-  ├─ requirements-dev.txt     # herramientas dev (pytest, black, ruff…)
-  ├─ pytest.ini
-  ├─ Dockerfile
-  ├─ .dockerignore
-  ├─ .gitignore
-  └─ README.md
+├─ app/
+│  ├─ __init__.py
+│  ├─ gui.py        # Interfaz Tkinter (orquestación)
+│  └─ cli.py        # Modo línea de comandos (inferencia + guardado de heatmap)
+├─ src/
+│  ├─ __init__.py
+│  ├─ io_imgs.py      # Lectura DICOM/JPG/PNG → RGB + PIL para GUI
+│  ├─ preprocess.py   # 512x512, gris, CLAHE, normalización, batch
+│  ├─ model.py        # Carga del modelo (.h5) → model_fun()
+│  ├─ explain.py      # Grad-CAM (tf.GradientTape) → heatmap superpuesto
+│  └─ inference.py    # predict() → (label, proba, heatmap)
+├─ model/             # (vacío en git; montar .h5 en runtime)
+├─ resultados/
+│  ├─ reportes/       # PDFs generados por GUI
+│  └─ historial/      # historial.csv
+├─ outputs/           # (opcional; resultados de CLI si usas --out)
+├─ samples/           # (imágenes locales de prueba; no versionadas)
+├─ tests/             # Pruebas unitarias (pytest)
+├─ pyproject.toml
+├─ requirements.txt
+├─ requirements-dev.txt
+├─ pytest.ini
+├─ Dockerfile
+├─ .dockerignore
+├─ .gitignore
+├─ CHANGELOG.md
+└─ README.md
 
 ## Pruebas (pytest)
   Ejecuta desde la raíz:
@@ -147,7 +179,13 @@ Por defecto se busca model/conv_MLP_84.h5. Para cambiar la ruta:
   export MODEL_PATH=/ruta/mi_modelo.h5
   uv run -m app.gui
 
-## Solución de problemas
+## Solución de problemas comunes
+
+- Asegúrate de que MODEL_PATH apunta a un .h5 válido.
+
+- Si no se habilita Predecir, verifica que has cargado una imagen.
+
+- Si Guardar/PDF están deshabilitados, revisa que haya cédula + predicción.
 
 ## Dependencias principales
 
