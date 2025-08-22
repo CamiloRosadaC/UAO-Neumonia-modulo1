@@ -86,6 +86,7 @@ uv pip install -r requirements-dev.txt (opcional: herramientas de desarrollo)
   ### Windows PowerShell
 
   docker run --rm `
+  
     -e MODEL_PATH=/app/model/conv_MLP_84.h5 `
     -v "${PWD}\model:/app/model" `
     -v "${PWD}\samples:/app/samples" `
