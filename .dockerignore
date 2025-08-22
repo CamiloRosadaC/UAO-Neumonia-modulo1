@@ -1,19 +1,27 @@
+# ==============================
 # Repositorio / VCS
+# ==============================
 .git
 .gitignore
 
-# Entornos y cachés
-.venv
+# ==============================
+# Python: entornos y cachés
+# ==============================
 __pycache__/
 *.pyc
 .pytest_cache/
+.venv/
 uv.lock
 
-# Datos pesados / locales (se montan en runtime)
+# ==============================
+# Datos / artefactos pesados
+# (se montan en runtime, no en la imagen)
+# ==============================
 model/
 outputs/
 samples/
 *.h5
+*.pth
 *.dcm
 *.csv
 *.pdf
@@ -21,13 +29,18 @@ samples/
 *.jpeg
 *.png
 
-# Tests y docs (no necesarios para la imagen de ejecución)
+# ==============================
+# Tests / documentación
+# ==============================
 tests/
-README*
 docs/
+README*
 
-# SO / editor
+# ==============================
+# Sistema operativo / IDE
+# ==============================
 .DS_Store
 .vscode/
 .idea/
+
 

@@ -22,14 +22,21 @@ Usa `setuptools` + *editable install*. Puedes usar `uv` (recomendado) o `pip`.
 #### **Con `uv`:**
 
 uv venv
+
+.venv/bin/activate 
+
 uv pip install -e .
+
 uv pip install -r requirements-dev.txt (opcional: herramientas de desarrollo)
 
 #### Con `pip` clásico
 
   python -m venv .venv
 
+  .venv/bin/activate
+
   pip install -e .
+
   pip install -r requirements-dev.txt    (opcional)
 
 ### Opcion B (respaldo): requirements.txt
@@ -39,7 +46,11 @@ uv pip install -r requirements-dev.txt (opcional: herramientas de desarrollo)
   #### con uv:
 
   uv venv
+
+  .venv/bin/activate
+
   uv pip install -r requirements.txt
+
   uv pip install -r requirements-dev.txt     (opcional)
 
   #### Con pip: (mismo patrón que arriba, sustituyendo pip install -e . por -r requirements.txt)
@@ -65,6 +76,36 @@ uv pip install -r requirements-dev.txt (opcional: herramientas de desarrollo)
   ### como módulo (vale en cualquier caso):
   python -m app.cli --img samples/bacteria.jpg --out outputs
 
+## Docker (solo CLI)
+  Construir imagen (desde fuera del contenedor):
+
+  docker build -t uao-neumonia:dev .
+
+  Ejecutar CLI:
+
+  ### Windows PowerShell
+
+  docker run --rm `
+    -e MODEL_PATH=/app/model/conv_MLP_84.h5 `
+    -v "${PWD}\model:/app/model" `
+    -v "${PWD}\samples:/app/samples" `
+    -v "${PWD}\outputs:/app/outputs" `
+    uao-neumonia:dev `
+    python -m app.cli --img /app/samples/bacteria.jpg --out /app/outputs
+
+  ### Linux/macOS
+
+  docker run --rm \
+    -e MODEL_PATH=/app/model/conv_MLP_84.h5 \
+    -v "${PWD}/model:/app/model" \
+    -v "${PWD}/samples:/app/samples" \
+    -v "${PWD}/outputs:/app/outputs" \
+    uao-neumonia:dev \
+    python -m app.cli --img /app/samples/bacteria.jpg --out /app/outputs
+  
+  nota: Todo esto se corre fuera del contenedor.
+  
+  Dentro del contenedor solo se corre el python -m app.cli ...
 
 ## Uso de la interfaz
   
@@ -107,32 +148,15 @@ Al ejecutar la app se crean automáticamente estas carpetas:
   Ejecuta desde la raíz:
 
   uv run -m pytest -q
+
   o
+
   pytest -q
 
   ### Incluye (mínimo):
 
     - tests/test_preprocess.py: valida shape y dtype de preprocess().
     - tests/test_inference_smoke.py: “smoke test” de predict() con monkeypatch (sin depender del .h5 real).
-
-## Docker (CLI)
-
-Construir:
-
-docker build -t uao-neumonia-cli .
-
-Ejecutar (montando modelo e imágenes):
-
-### Windows PowerShell
-docker run --rm `
-  -v "$PWD\model:/app/model" `
-  -v "$PWD\samples:/app/samples" `
-  -v "$PWD\outputs:/app/outputs" `
-  -e MODEL_PATH=/app/model/conv_MLP_84.h5 `
-  uao-neumonia-cli python -m app.cli --img /app/samples/bacteria.jpg --out /app/outputs
-
-(macOS/Linux (equivalente con \ y $PWD))
-
 
 ## Configuración del modelo
 

@@ -1,15 +1,18 @@
-pyautogui
-pillow
-tkcap
-pydicom
+# --- Núcleo del proyecto (runtime) ---
 img2pdf
-#opencv_python
-#matplotlib
-#pandas
-tensorflow
-#python-xlib
+numpy>=1.24
+opencv-python-headless>=4.8
+pillow>=10.0
+pydicom>=2.4
+pyautogui
+tensorflow>=2.12
+tkcap
 
-numpy
-opencv-python
+# Solo Linux: requerido por pyautogui para automatización X11
 python-xlib; sys_platform == "linux"
+
+# --- Opcionales (descomenta si los usas) ---
+# matplotlib
+# pandas
+
 
