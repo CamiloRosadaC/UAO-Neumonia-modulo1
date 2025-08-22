@@ -16,7 +16,7 @@ Incluye explicación visual **Grad-CAM**, que superpone un mapa de calor sobre l
 
 Este repo soporta **dos** formas de instalar dependencias:
 
-### ✅ Opción A (recomendada): `pyproject.toml` como fuente única de *runtime*
+### Opción A (recomendada): `pyproject.toml` como fuente única de *runtime*
 Usa `setuptools` + *editable install*. Puedes usar `uv` (recomendado) o `pip`.
 
 #### **Con `uv`:**
