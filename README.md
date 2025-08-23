@@ -226,9 +226,9 @@ https://opensource.org/licenses/MIT
 
 ## Proyecto realizado por:
 
-Camilo Eduardo Rosada Caicedo - https://github.com/CamiloRosadaC
+Camilo Eduardo Rosada Caicedo - 2205121 - https://github.com/CamiloRosadaC
 
-Edilmer chachinoy narvaez
-Ivan Rodrigo Castillo Cañas
-Dario Fernando Narvaez Guevara
+Edilmer chachinoy narvaez - 22501262
+Ivan Rodrigo Castillo Cañas - 22502346
+Dario Fernando Narvaez Guevara - 22500268
 
