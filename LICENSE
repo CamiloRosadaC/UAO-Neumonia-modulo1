@@ -1,0 +1,103 @@
+AVISO DE LICENCIA MIXTA / MIXED LICENSE NOTICE
+============================================
+
+Este proyecto contiene código con diferentes estados de licenciamiento.
+This project contains code with different licensing statuses.
+
+CÓDIGO BASE ORIGINAL / ORIGINAL CODEBASE
+----------------------------------------
+
+El código base de este proyecto está basado en el repositorio:
+The base code of this project is based on the repository:
+https://github.com/dalquinones/UAO-Neumonia
+
+El repositorio original no incluye una licencia pública explícita, por lo que 
+todos los derechos sobre dicho trabajo pertenecen a sus autores originales.
+The original repository does not include an explicit public license, so all 
+rights to that work belong to its original authors.
+
+IMPORTANTE: El uso del código original está limitado únicamente a fines 
+académicos y de aprendizaje, sin fines comerciales ni de redistribución pública.
+IMPORTANT: The use of the original code is limited to academic and learning 
+purposes only, without commercial or public redistribution purposes.
+
+MODIFICACIONES Y CONTRIBUCIONES / MODIFICATIONS AND CONTRIBUTIONS
+-----------------------------------------------------------------
+
+Todas las modificaciones, correcciones y nuevas contribuciones realizadas en 
+este repositorio a partir de 2024 están licenciadas bajo la Licencia MIT:
+All modifications, corrections and new contributions made to this repository 
+from 2024 onwards are licensed under the MIT License:
+
+MIT License
+
+Copyright (c) 2024 Camilo Rosada
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+ALCANCE DE LA LICENCIA MIT / SCOPE OF MIT LICENSE
+-------------------------------------------------
+
+La Licencia MIT aplicada en este proyecto cubre ÚNICAMENTE:
+The MIT License applied in this project covers ONLY:
+
+- Código nuevo añadido por Camilo Rosada (2024+)
+- Modificaciones realizadas al código original
+- Documentación nueva o modificada
+- Archivos de configuración nuevos o modificados
+
+- New code added by Camilo Rosada (2024+)
+- Modifications made to the original code
+- New or modified documentation
+- New or modified configuration files
+
+NO cubre el código base original del repositorio fuente, el cual permanece 
+bajo la protección de derechos de autor de sus autores originales.
+It does NOT cover the original base code from the source repository, which 
+remains under copyright protection of its original authors.
+
+TÉRMINOS DE USO / TERMS OF USE
+------------------------------
+
+Los usuarios de este proyecto deben:
+Users of this project must:
+
+1. Respetar los derechos de autor del código original
+2. Usar el código original únicamente con fines académicos
+3. Dar crédito apropiado a los autores originales
+4. Cumplir con los términos de la Licencia MIT para las modificaciones
+
+1. Respect the copyright of the original code
+2. Use the original code only for academic purposes
+3. Give appropriate credit to the original authors
+4. Comply with the MIT License terms for modifications
+
+CONTACTO / CONTACT
+------------------
+
+Para consultas sobre el uso de este proyecto:
+For inquiries about the use of this project:
+Camilo Rosada
+
+Para consultas sobre el código original:
+For inquiries about the original code:
+https://github.com/dalquinones/UAO-Neumonia
+
+Última actualización: Agosto 2024
+Last updated: August 2024
