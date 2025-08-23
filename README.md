@@ -194,8 +194,35 @@ requirements.txt se mantiene como respaldo (instalación alternativa).
 
 ## Licencia
 
-### MIT.
-::contentReference[oaicite:0]{index=0}
+Aviso de uso académico y licencia parcial
+-----------------------------------------
+
+Este proyecto es una adaptación académica basada en el repositorio:
+https://github.com/dalquinones/UAO-Neumonia
+
+El código original no incluye una licencia pública, por lo cual sus
+autores conservan todos los derechos sobre dicho trabajo. Esta
+versión se utiliza únicamente con fines académicos y de aprendizaje,
+sin fines comerciales ni de distribución pública.
+
+Las modificaciones, correcciones y aportes realizados en este
+repositorio a partir de 2024 se publican bajo la Licencia MIT:
+
+MIT License
+-----------
+
+Copyright (c) 2024 [Camilo Rosada]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software with the following restrictions:
+
+- Este permiso aplica únicamente sobre el código y documentación añadida
+  en esta versión, no sobre el trabajo original sin licencia.
+- El Software se proporciona "tal cual", sin garantías de ningún tipo.
+
+Para más detalles sobre la Licencia MIT, consultar:
+https://opensource.org/licenses/MIT
 
 ## Proyecto realizado por:
 
