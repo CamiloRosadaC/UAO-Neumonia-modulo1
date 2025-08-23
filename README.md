@@ -201,3 +201,7 @@ requirements.txt se mantiene como respaldo (instalación alternativa).
 
 Camilo Eduardo Rosada Caicedo - https://github.com/CamiloRosadaC
 
+Edilmer chachinoy narvaez
+Ivan Rodrigo Castillo Cañas
+Dario Fernando Narvaez Guevara
+
